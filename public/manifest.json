@@ -1,0 +1,22 @@
+{
+  "name": "FWMS - Premium Manager",
+  "short_name": "FWMS App",
+  "description": "Factory and Warehouse Management System",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#14213d",
+  "theme_color": "#14213d",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,331 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String     @id @default(cuid())
+  name        String
+  username    String     @unique
+  email       String?    @unique
+  password    String
+  role        String     @default("STORE_KEEPER") // Roles: NETWORK_ADMIN, SITE_MANAGER, QC_OFFICER, STORE_KEEPER, PICKER
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id])
+  phone             String?
+  status            String     @default("ACTIVE")
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  transfersInitiated Transfer[]     @relation("InitiatedBy")
+  transfersApproved  Transfer[]     @relation("ApprovedBy")
+  receipts           Receipt[]
+  expenses           Expense[]
+  announcements      Announcement[]
+  sentMessages       Message[]      @relation("SentMessages")
+  conversations      Conversation[] @relation("ConversationUsers")
+  activityLogs       ActivityLog[]
+}
+
+model CompanySettings {
+  id               String   @id @default(cuid())
+  name             String   @default("My Company")
+  address                 String?
+  logoUrl                 String?
+  whatsappTemplate        String?  @default("Hello! Here is your invoice from {company_name}. Thank you for your patronage!")
+  globalLowStockThreshold Int      @default(50)
+  updatedAt               DateTime @updatedAt
+}
+
+model Warehouse {
+  id        String   @id @default(cuid())
+  name      String
+  location  String
+  type      String   @default("MARKET")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users             User[]
+  zones             Zone[]
+  stocks            Stock[]
+  incomingTransfers Transfer[]  @relation("Destination")
+  outgoingTransfers Transfer[]  @relation("Source")
+  receipts          Receipt[]
+  workOrders        WorkOrder[]
+  activityLogs      ActivityLog[]
+}
+
+model Zone {
+  id          String    @id @default(cuid())
+  name        String
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  type        String    @default("GENERAL") // GENERAL, CLIMATE_CONTROLLED, HAZMAT
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  locations Location[]
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  code      String
+  zoneId    String
+  zone      Zone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stocks Stock[]
+}
+
+model Product {
+  id           String   @id @default(cuid())
+  name         String
+  sku          String   @unique
+  barcode      String?  @unique
+  categoryId   String
+  category     Category @relation(fields: [categoryId], references: [id])
+  brand        String?
+  size         String?
+  measurement  String?
+  unit         String   @default("Quantity")
+  costPrice         Float    @default(0)
+  sellingPrice      Float    @default(0)
+  lowStockThreshold Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  stocks          Stock[]
+  transferItems   TransferItem[]
+  purchaseItems   PurchaseOrderItem[]
+  receiptItems    ReceiptItem[]
+  workOrders      WorkOrder[]
+  materialsIssued MaterialIssuance[]  @relation("MaterialIssued")
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+}
+
+model Stock {
+  id             String    @id @default(cuid())
+  productId      String
+  product        Product   @relation(fields: [productId], references: [id])
+  warehouseId    String
+  warehouse      Warehouse @relation(fields: [warehouseId], references: [id])
+  locationId     String?
+  location       Location? @relation(fields: [locationId], references: [id])
+  quantity       Int       @default(0)
+  reserved       Int       @default(0)
+  damaged        Int       @default(0)
+  totalReceived  Int       @default(0)
+  totalSupplied  Int       @default(0)
+  lastReceivedAt DateTime?
+  batchNumber    String?
+  mfgDate        DateTime?
+  expDate        DateTime?
+  status         String    @default("SELLABLE") // SELLABLE, QC_HOLD, QUARANTINED
+  coaUrl         String? // Certificate of Analysis Document URL
+  updatedAt      DateTime  @updatedAt
+
+  // Note: SQLite allows multiple NULLs in unique constraints
+  @@unique([productId, warehouseId, batchNumber])
+}
+
+model Transfer {
+  id            String    @id @default(cuid())
+  reference     String    @unique
+  sourceId      String
+  source        Warehouse @relation("Source", fields: [sourceId], references: [id])
+  destinationId String
+  destination   Warehouse @relation("Destination", fields: [destinationId], references: [id])
+  status        String    @default("PENDING") // PENDING, APPROVED, IN_TRANSIT, RECEIVED, RECONCILED
+
+  initiatedById String
+  initiatedBy   User    @relation("InitiatedBy", fields: [initiatedById], references: [id])
+  approvedById  String?
+  approvedBy    User?   @relation("ApprovedBy", fields: [approvedById], references: [id])
+
+  vehicleNum String?
+  driverName String?
+  remarks    String?
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items TransferItem[]
+}
+
+model TransferItem {
+  id          String   @id @default(cuid())
+  transferId  String
+  transfer    Transfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  quantity    Int
+  batchNumber String?
+  packageType String?
+  size        String?
+}
+
+model PurchaseOrder {
+  id        String   @id @default(cuid())
+  reference String   @unique
+  supplier  String
+  status    String   @default("PENDING") // PENDING, PARTIAL, COMPLETED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items    PurchaseOrderItem[]
+  receipts Receipt[]
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id])
+  expectedQty     Int
+  receivedQty     Int           @default(0)
+}
+
+model Receipt {
+  id              String         @id @default(cuid())
+  reference       String         @unique
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+  warehouseId     String
+  warehouse       Warehouse      @relation(fields: [warehouseId], references: [id])
+  receivedById    String
+  receivedBy      User           @relation(fields: [receivedById], references: [id])
+  status          String         @default("RECEIVED") // RECEIVED, PUTAWAY_PENDING, COMPLETED
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  items ReceiptItem[]
+}
+
+model ReceiptItem {
+  id          String    @id @default(cuid())
+  receiptId   String
+  receipt     Receipt   @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+  quantity    Int
+  batchNumber String?
+  mfgDate     DateTime?
+  expDate     DateTime?
+  status      String    @default("QC_HOLD") // QC_HOLD default for cosmetics
+}
+
+model WorkOrder {
+  id          String    @id @default(cuid())
+  reference   String    @unique
+  productId   String // Finished good being produced
+  product     Product   @relation(fields: [productId], references: [id])
+  targetQty   Int
+  status      String    @default("PLANNED") // PLANNED, IN_PROGRESS, COMPLETED, CANCELLED
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  issuances MaterialIssuance[]
+}
+
+model MaterialIssuance {
+  id          String    @id @default(cuid())
+  workOrderId String
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation("MaterialIssued", fields: [productId], references: [id])
+  batchNumber String
+  quantity    Int
+  createdAt   DateTime  @default(now())
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String?  @unique
+  address   String?
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transfers Transfer[]
+}
+
+model Expense {
+  id           String   @id @default(cuid())
+  amount       Float
+  category     String // e.g. "Fuel", "Transport", "Packaging"
+  description  String?
+  date         DateTime @default(now())
+  recordedById String
+  recordedBy   User     @relation(fields: [recordedById], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  message   String
+  priority  String   @default("NORMAL") // HIGH, NORMAL, LOW
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SystemSettings {
+  id         String   @id @default("default")
+  logoUrl    String?
+  loginBgUrl String?
+  updatedAt  DateTime @updatedAt
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  users     User[]    @relation("ConversationUsers")
+  messages  Message[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  content        String
+  createdAt      DateTime     @default(now())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderId       String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id])
+  isRead         Boolean      @default(false)
+}
+
+model ActivityLog {
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  action      String
+  details     String?
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id])
+  createdAt   DateTime   @default(now())
+}
+

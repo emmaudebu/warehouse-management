@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# next.js
+/.next/
+/out/
+build/
+
+# environment variables
+.env
+.env*.local
+
+# prisma local database
+*.db
+*.sqlite
+*.db-journal
+
+# user uploads
+public/uploads/
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+
+# test scripts
+test-stella.ts
+reset-stella.ts
