@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { getTransfers } from '@/app/actions/transfers'
 import Card from './Card'
 import ExportCSVButton from './ExportCSVButton'
+import TransferActionButtons from './TransferActionButtons'
 
 export default function TransferHistory({ warehouseId, userId, limit = 6, hideActions = false }: { warehouseId?: string, userId?: string, limit?: number, hideActions?: boolean }) {
   const [transfers, setTransfers] = useState<any[]>([])
@@ -148,9 +149,17 @@ export default function TransferHistory({ warehouseId, userId, limit = 6, hideAc
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     {new Date(t.createdAt).toLocaleDateString()}
                   </div>
-                  <div style={{ marginTop: '0.5rem' }}>
+                  <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                    {t.status === 'PENDING' && !hideActions && warehouseId && (
+                      <TransferActionButtons 
+                        transferId={t.id} 
+                        mode={isOutgoing ? 'SENDER' : 'RECEIVER'} 
+                      />
+                    )}
                     <a href={t.status === 'DRAFT' ? `/supply/${t.id}` : `/invoice/${t.id}`} style={{
-                      display: 'inline-block',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       padding: '0.4rem 1rem',
                       borderRadius: '0.5rem',
                       backgroundColor: 'var(--primary-color)',

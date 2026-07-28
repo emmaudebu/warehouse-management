@@ -4,6 +4,8 @@ import { recordProduction } from '@/app/actions/factory'
 
 import InventoryTable from '@/components/InventoryTable'
 import AddProductForm from '@/components/AddProductForm'
+import BulkProductUpload from '@/components/BulkProductUpload'
+import ExportCSVButton from '@/components/ExportCSVButton'
 import ManualSupplyForm from '@/components/ManualSupplyForm'
 import TransferHistory from '@/components/TransferHistory'
 import LowStockAlerts from '@/components/LowStockAlerts'
@@ -60,9 +62,23 @@ export default async function FactoryDashboard() {
         <LowStockAlerts warehouseId={factoryWarehouse.id} />
       </section>
 
-      {/* Inventory Management Section */}
       <section id="inventory">
-        <h2 className="text-gradient" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Factory Inventory</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h2 className="text-gradient" style={{ fontSize: '1.5rem', margin: 0 }}>Factory Inventory</h2>
+          <ExportCSVButton 
+            data={products.map(p => ({
+              ID: p.id,
+              Name: p.name,
+              SKU: p.sku,
+              Category: p.category.name,
+              Unit: p.unit,
+              "Cost Price": p.costPrice,
+              "Selling Price": p.sellingPrice,
+              "Low Stock Threshold": p.lowStockThreshold || 0
+            }))} 
+            filename="products_export" 
+          />
+        </div>
         <InventoryTable 
           stocks={stocks} 
           categories={categories} 
@@ -79,6 +95,10 @@ export default async function FactoryDashboard() {
         <Card style={{ borderTop: '4px solid var(--primary-color)' }}>
           <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📦 Add New Product</h3>
           <AddProductForm categories={categories} />
+          
+          <hr style={{ margin: '2rem 0', borderColor: 'var(--border-color)', opacity: 0.5 }} />
+          
+          <BulkProductUpload />
         </Card>
         
         {/* Record Production Form */}

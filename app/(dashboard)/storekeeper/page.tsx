@@ -1,6 +1,7 @@
 import Card from '@/components/Card'
 import prisma from '@/lib/prisma'
 import { receiveTransfer } from '@/app/actions/transfers'
+import TransferActionButtons from '@/components/TransferActionButtons'
 import InventoryTable from '@/components/InventoryTable'
 import ManualSupplyForm from '@/components/ManualSupplyForm'
 import { addProduct } from '@/app/actions/products'
@@ -128,13 +129,8 @@ export default async function MarketDashboard() {
                     </div>
                   ))}
                   
-                  <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-                    <form action={async () => {
-                      'use server';
-                      await receiveTransfer(transfer.id);
-                    }} style={{ flex: 1, display: 'flex' }}>
-                      <button className="btn btn-primary" style={{ flex: 1 }}>Verify & Accept Supply ✅</button>
-                    </form>
+                  <div style={{ marginTop: '0.5rem' }}>
+                    <TransferActionButtons transferId={transfer.id} mode="RECEIVER" />
                   </div>
                 </div>
               ))}

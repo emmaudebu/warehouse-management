@@ -38,6 +38,9 @@ export default function InventoryTable({
   // Sorting state
   const [sortBy, setSortBy] = useState('newest_delivery')
 
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('')
+
   const canEdit = role === 'DIRECTOR' || role === 'FACTORY_MANAGER'
   const canSupply = !!sourceWarehouseId
 
@@ -92,8 +95,12 @@ export default function InventoryTable({
     }
   }
 
-  // Sort the stocks array before rendering
-  const sortedStocks = [...stocks].sort((a, b) => {
+  // Filter and Sort the stocks array before rendering
+  const filteredStocks = stocks.filter(stock => 
+    stock.product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const sortedStocks = [...filteredStocks].sort((a, b) => {
     if (sortBy === 'newest_delivery') {
       return (new Date(b.lastReceivedAt || 0).getTime()) - (new Date(a.lastReceivedAt || 0).getTime())
     }
@@ -113,7 +120,28 @@ export default function InventoryTable({
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       
       {/* Table Toolbar */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        
+        {/* Search Field */}
+        <div style={{ flex: '1 1 300px', maxWidth: '500px' }}>
+          <input 
+            type="text" 
+            placeholder="🔍 Search products by name..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.75rem',
+              backgroundColor: 'var(--bg-dark)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-light)',
+              outline: 'none',
+              fontSize: '0.875rem'
+            }}
+          />
+        </div>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <label style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Sort Inventory:</label>
           <select 

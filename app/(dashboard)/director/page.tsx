@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma'
 import StockPieChart from '@/components/charts/StockPieChart'
 import ActivityLineChart from '@/components/charts/ActivityLineChart'
 import ExportButtons from '@/components/ExportButtons'
+import ExportCSVButton from '@/components/ExportCSVButton'
 import InventoryTable from '@/components/InventoryTable'
 import TransferHistory from '@/components/TransferHistory'
 import LowStockAlerts from '@/components/LowStockAlerts'
@@ -11,7 +12,8 @@ import { auth } from '@/auth'
 export default async function DirectorDashboard() {
   const session = await auth()
   const role = session?.user?.role
-  const totalProducts = await prisma.product.count()
+  const products = await prisma.product.findMany({ include: { category: true } })
+  const totalProducts = products.length
   const categories = await prisma.category.findMany()
   
   const stocks = await prisma.stock.findMany({
@@ -204,9 +206,23 @@ export default async function DirectorDashboard() {
         </Card>
       </section>
 
-      {/* Inventory Management Section */}
       <section id="inventory">
-        <h2 className="text-gradient" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Global Inventory (All Locations)</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h2 className="text-gradient" style={{ fontSize: '1.5rem', margin: 0 }}>Global Inventory (All Locations)</h2>
+          <ExportCSVButton 
+            data={products.map(p => ({
+              ID: p.id,
+              Name: p.name,
+              SKU: p.sku,
+              Category: p.category.name,
+              Unit: p.unit,
+              "Cost Price": p.costPrice,
+              "Selling Price": p.sellingPrice,
+              "Low Stock Threshold": p.lowStockThreshold || 0
+            }))} 
+            filename="global_products_export" 
+          />
+        </div>
         <InventoryTable stocks={stocks} categories={categories} showLocation={true} role={role} />
       </section>
 

@@ -488,3 +488,111 @@ export async function updateTransferDraft(formData: FormData) {
     return { error: 'Failed to update draft: ' + error.message }
   }
 }
+
+// Rejects a pending transfer (receiver side)
+export async function rejectTransfer(transferId: string, reason: string) {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) throw new Error('Unauthorized')
+
+    await prisma.$transaction(async (tx) => {
+      const transfer = await tx.transfer.findUnique({
+        where: { id: transferId },
+        include: { items: true }
+      })
+
+      if (!transfer || transfer.status !== 'PENDING') {
+        throw new Error('Invalid transfer or not in pending state')
+      }
+
+      // Restore stock to source available quantity
+      for (const item of transfer.items) {
+        await tx.stock.updateMany({
+          where: { productId: item.productId, warehouseId: transfer.sourceId, batchNumber: item.batchNumber || '' },
+          data: {
+            quantity: { increment: item.quantity },
+            reserved: { decrement: item.quantity },
+            totalSupplied: { decrement: item.quantity }
+          }
+        })
+      }
+
+      // Update transfer status
+      await tx.transfer.update({ 
+        where: { id: transferId },
+        data: { 
+          status: 'REJECTED',
+          remarks: reason ? `Rejected: ${reason}` : 'Rejected without reason'
+        }
+      })
+    })
+
+    await logActivity(session.user.id, `Rejected transfer #${transferId}`, `Reason: ${reason || 'None provided'}`, session.user.warehouseId)
+
+    revalidatePath('/factory')
+    revalidatePath('/director')
+    revalidatePath('/salesperson')
+    revalidatePath('/storekeeper')
+    revalidatePath('/supplier')
+    
+    return { success: true }
+  } catch (error: any) {
+    console.error(error.message)
+    return { error: 'Failed to reject transfer: ' + error.message }
+  }
+}
+
+// Cancels a submitted/pending transfer (sender side)
+export async function cancelSubmittedTransfer(transferId: string) {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) throw new Error('Unauthorized')
+
+    await prisma.$transaction(async (tx) => {
+      const transfer = await tx.transfer.findUnique({
+        where: { id: transferId },
+        include: { items: true }
+      })
+
+      if (!transfer || transfer.status !== 'PENDING') {
+        throw new Error('Invalid transfer or not in pending state')
+      }
+
+      // Verify the user owns the source warehouse (security check)
+      if (session.user.role !== 'DIRECTOR' && session.user.warehouseId !== transfer.sourceId) {
+        throw new Error('Only the sender can cancel this supply')
+      }
+
+      // Restore stock
+      for (const item of transfer.items) {
+        await tx.stock.updateMany({
+          where: { productId: item.productId, warehouseId: transfer.sourceId, batchNumber: item.batchNumber || '' },
+          data: {
+            quantity: { increment: item.quantity },
+            reserved: { decrement: item.quantity },
+            totalSupplied: { decrement: item.quantity }
+          }
+        })
+      }
+
+      // Update status
+      await tx.transfer.update({ 
+        where: { id: transferId },
+        data: { status: 'CANCELLED', remarks: 'Cancelled by sender' } 
+      })
+    })
+
+    await logActivity(session.user.id, `Cancelled pending transfer #${transferId}`, `Stock restored`, session.user.warehouseId)
+
+    revalidatePath('/factory')
+    revalidatePath('/director')
+    revalidatePath('/salesperson')
+    revalidatePath('/storekeeper')
+    revalidatePath('/supplier')
+    
+    return { success: true }
+  } catch (error: any) {
+    console.error(error.message)
+    return { error: 'Failed to cancel transfer: ' + error.message }
+  }
+}
