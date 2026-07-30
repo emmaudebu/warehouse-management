@@ -34,7 +34,7 @@ export default async function AdminControlPanel() {
       {/* Top Row: Company Settings & Warehouse */}
       <section style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', 
         gap: '1.5rem',
         alignItems: 'start',
         marginBottom: '1.5rem'
@@ -44,7 +44,7 @@ export default async function AdminControlPanel() {
         <Card style={{ borderTop: '4px solid var(--primary-color)' }}>
           <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>🏢 Company Branding</h3>
           <form action={updateCompanySettings} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', marginBottom: '2rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem' }}>
               <FormGroup label="Company Name" type="text" name="name" defaultValue={settings?.name || ''} />
               <FormGroup label="HQ Address" type="text" name="address" defaultValue={settings?.address || ''} />
             </div>
@@ -81,7 +81,7 @@ export default async function AdminControlPanel() {
       {/* Bottom Row: Media Assets & Create User */}
       <section style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', 
         gap: '1.5rem',
         alignItems: 'start',
         marginBottom: '1.5rem'
@@ -104,7 +104,7 @@ export default async function AdminControlPanel() {
 
       </section>
 
-      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.5rem' }}>
         {/* Noticeboard */}
         <Card style={{ borderTop: '4px solid var(--primary-color)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>

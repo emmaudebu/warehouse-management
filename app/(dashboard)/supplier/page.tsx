@@ -61,7 +61,7 @@ export default async function SupplierDashboard() {
 
       {/* KPI Summary Cards */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.5rem' }}>
           <DashboardMetric title="Products Received" value={productsReceived.toLocaleString()} change="Total items historical" />
           <DashboardMetric title="Products Delivered" value="0" change="To customers (Mock)" />
           <DashboardMetric title="Pending Deliveries" value={pendingTransfers.length.toString()} change="Awaiting acceptance" isAlert={pendingTransfers.length > 0} />
@@ -83,7 +83,7 @@ export default async function SupplierDashboard() {
       </section>
 
       {/* Pending Deliveries */}
-      <section id="actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem' }}>
+      <section id="actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '1.5rem' }}>
         <Card style={{ borderTop: '4px solid var(--primary-color)' }}>
           <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>🚚 Incoming Supplies</h3>
           {pendingTransfers.length === 0 ? (

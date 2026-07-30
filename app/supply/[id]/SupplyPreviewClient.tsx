@@ -109,7 +109,7 @@ export default function SupplyPreviewClient({ transfer, products, isFinalized = 
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2rem', marginBottom: '2rem' }}>
         <div>
           <h4 style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>From</h4>
           <p style={{ fontWeight: 600 }}>{transfer.source.name}</p>
@@ -120,7 +120,7 @@ export default function SupplyPreviewClient({ transfer, products, isFinalized = 
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem', backgroundColor: 'var(--bg-dark)', padding: '1.5rem', borderRadius: '0.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2rem', marginBottom: '2rem', backgroundColor: 'var(--bg-dark)', padding: '1.5rem', borderRadius: '0.5rem' }}>
         <div>
           <h4 style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Delivery Person</h4>
           {isEditing ? (

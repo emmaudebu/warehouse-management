@@ -71,7 +71,7 @@ export default async function MarketDashboard() {
 
       {/* KPI Summary Cards */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.5rem' }}>
           <DashboardMetric title="Warehouse Stock" value={currentStock.toLocaleString()} change="Total items" />
           <DashboardMetric title="Today's Deliveries" value={todaysDeliveries.toString()} change="Completed today" />
           <DashboardMetric title="Pending Deliveries" value={pendingTransfers.length.toString()} change="Awaiting verification" isAlert={pendingTransfers.length > 0} />
@@ -93,7 +93,7 @@ export default async function MarketDashboard() {
       </section>
 
       {/* Pending Deliveries & Stock Table */}
-      <section id="actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem' }}>
+      <section id="actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '1.5rem' }}>
         
         {/* Pending Deliveries */}
         <Card style={{ borderTop: '4px solid var(--primary-color)' }}>

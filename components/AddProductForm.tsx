@@ -18,7 +18,7 @@ export default function AddProductForm({ categories }: { categories: { id: strin
   }
 
   return (
-    <form ref={formRef} action={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+    <form ref={formRef} action={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1rem' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <label style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 500 }}>Product Name</label>
         <input type="text" name="name" placeholder="e.g. Lavender Body Lotion" required style={inputStyle} />

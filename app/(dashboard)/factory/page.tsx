@@ -53,7 +53,7 @@ export default async function FactoryDashboard() {
 
       {/* KPI Summary Cards */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.5rem' }}>
           <DashboardMetric title="Current Stock" value={currentStock.toLocaleString()} change="Total Items Available" />
           <DashboardMetric title="Pending Deliveries" value={pendingDeliveries.toString()} change="Awaiting transit/acceptance" isAlert={pendingDeliveries > 0} />
           <DashboardMetric title="Completed Deliveries" value={completedDeliveries.toString()} change="Products sent successfully" />
@@ -89,7 +89,7 @@ export default async function FactoryDashboard() {
       </section>
 
       {/* Action Forms Section */}
-      <section id="actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem' }}>
+      <section id="actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '1.5rem' }}>
         
         {/* Add Product Form */}
         <Card style={{ borderTop: '4px solid var(--primary-color)' }}>
@@ -104,7 +104,7 @@ export default async function FactoryDashboard() {
         {/* Record Production Form */}
         <Card style={{ borderTop: '4px solid var(--primary-color)' }}>
           <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>🏭 Record New Production</h3>
-          <form action={recordProduction} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <form action={recordProduction} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1rem' }}>
             <input type="hidden" name="warehouseId" value={factoryWarehouse.id} />
             
             <FormGroup label="Product" type="select" name="productId" options={products.map(p => ({ label: p.name, value: p.id }))} />

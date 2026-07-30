@@ -335,7 +335,7 @@ export default function InventoryTable({
           <form action={async (formData) => {
             const res = await initiateTransfer(formData)
             if (res?.error) alert(res.error)
-          }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+          }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.5rem' }}>
             <input type="hidden" name="sourceId" value={sourceWarehouseId} />
             <input type="hidden" name="items" value={JSON.stringify(
               selectedStockIds.map(stockId => {

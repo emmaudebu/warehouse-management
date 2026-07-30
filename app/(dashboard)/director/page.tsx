@@ -137,14 +137,14 @@ export default async function DirectorDashboard() {
       <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         
         {/* Financial KPI Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.5rem' }}>
           <DashboardMetric title="Total Revenue" value={`₦${totalRevenue.toLocaleString()}`} change="From external sales" />
           <DashboardMetric title="Total Expenses" value={`₦${totalExpenses.toLocaleString()}`} change="Overhead costs" />
           <DashboardMetric title="Net Profit" value={`₦${netProfit.toLocaleString()}`} change="Revenue - COGS - Expenses" />
         </div>
 
         {/* Operational KPI Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.5rem' }}>
           <DashboardMetric title="Global Stock" value={globalStock.toLocaleString()} change="Total across all locations" />
           <DashboardMetric title="Products Tracked" value={totalProducts.toString()} change="Active catalog" />
           <DashboardMetric title="Factory Holdings" value={factoryStock.toLocaleString()} change={`${((factoryStock/globalStock)*100 || 0).toFixed(1)}% of total`} />
@@ -155,7 +155,7 @@ export default async function DirectorDashboard() {
       </section>
 
       {/* Charts & Tracking Section */}
-      <section id="actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+      <section id="actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.5rem' }}>
         <Card>
           <h3 style={{ marginBottom: '1rem', color: 'var(--text-muted)' }}>Stock Distribution</h3>
           <StockPieChart data={pieData} />

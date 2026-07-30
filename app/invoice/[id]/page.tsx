@@ -166,7 +166,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
         </table>
 
         {/* Signatures */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', marginTop: '4rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '4rem', marginTop: '4rem' }}>
           <div>
             <div style={{ borderBottom: '1px solid #d1d5db', height: '40px' }}></div>
             <p style={{ textAlign: 'center', marginTop: '0.5rem', color: '#4b5563', fontSize: '0.875rem' }}>Authorized Signature (Dispatch)</p>
