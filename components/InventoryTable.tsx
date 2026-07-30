@@ -333,6 +333,21 @@ export default function InventoryTable({
             🚚 Supply Selected Items ({selectedStockIds.length})
           </h3>
           <form action={async (formData) => {
+            const insufficientProducts: string[] = []
+            
+            for (const stockId of selectedStockIds) {
+              const stock = stocks.find(s => s.id === stockId)
+              const requested = supplyQuantities[stockId] || 1
+              if (stock && requested > stock.quantity) {
+                insufficientProducts.push(`${stock.product.name} (Requested: ${requested}, Available: ${stock.quantity})`)
+              }
+            }
+
+            if (insufficientProducts.length > 0) {
+              alert(`Insufficient stock for the following products:\n\n${insufficientProducts.join('\n')}`)
+              return
+            }
+
             const res = await initiateTransfer(formData)
             if (res?.error) alert(res.error)
           }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.5rem' }}>

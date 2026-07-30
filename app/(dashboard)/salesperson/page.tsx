@@ -30,7 +30,10 @@ export default async function SalespersonDashboard() {
   const availableProductsMap = new Map()
   warehouse.stocks.filter(s => s.quantity > 0).forEach(s => {
     if (!availableProductsMap.has(s.product.id)) {
-      availableProductsMap.set(s.product.id, s.product)
+      availableProductsMap.set(s.product.id, {
+        ...s.product,
+        stockQuantity: s.quantity
+      })
     }
   })
   const availableProducts = Array.from(availableProductsMap.values())

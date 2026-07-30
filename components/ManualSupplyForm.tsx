@@ -14,7 +14,7 @@ export default function ManualSupplyForm({
 }: { 
   sourceId: string, 
   destinations: { id: string, name: string }[],
-  products: { id: string, name: string, category: { name: string }, sellingPrice?: number }[]
+  products: { id: string, name: string, category: { name: string }, sellingPrice?: number, stockQuantity?: number }[]
 }) {
   const [items, setItems] = useState<any[]>([])
   const [draftItem, setDraftItem] = useState({ productId: '', quantity: 1, packageType: '', size: '' })
@@ -30,6 +30,20 @@ export default function ManualSupplyForm({
       alert("Please select a product first.")
       return
     }
+    
+    // Check against stock quantity if provided
+    const productInfo = products.find(p => p.id === draftItem.productId)
+    if (productInfo?.stockQuantity !== undefined) {
+      // Calculate total requested including already added items of this product
+      const alreadyAdded = items.filter(i => i.productId === draftItem.productId).reduce((acc, curr) => acc + curr.quantity, 0)
+      const totalRequested = alreadyAdded + draftItem.quantity
+      
+      if (totalRequested > productInfo.stockQuantity) {
+        alert(`Insufficient stock for ${productInfo.name}. You requested ${totalRequested}, but only ${productInfo.stockQuantity} are available in stock.`)
+        return
+      }
+    }
+
     setItems([...items, draftItem])
     setDraftItem({ productId: '', quantity: 1, packageType: '', size: '' })
   }

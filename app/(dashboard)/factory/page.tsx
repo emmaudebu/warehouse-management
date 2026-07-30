@@ -126,7 +126,10 @@ export default async function FactoryDashboard() {
         <ManualSupplyForm 
           sourceId={factoryWarehouse.id} 
           destinations={destinations} 
-          products={products} 
+          products={products.map(p => ({
+            ...p,
+            stockQuantity: stocks.find(s => s.productId === p.id)?.quantity || 0
+          }))} 
         />
 
       </section>
