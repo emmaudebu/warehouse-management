@@ -9,11 +9,19 @@ import SettingsUploader from '@/components/SettingsUploader'
 import { getSystemSettings } from '@/app/actions/settings'
 
 export default async function AdminControlPanel() {
-  const settings = await prisma.companySettings.findFirst()
-  const warehouses = await prisma.warehouse.findMany({ where: { type: { not: 'EXTERNAL' } } })
-  const users = await prisma.user.findMany({ include: { warehouse: true } })
-  const expenses = await prisma.expense.findMany({ orderBy: { date: 'desc' }, take: 10, include: { recordedBy: true } })
-  const announcement = await prisma.announcement.findFirst({ where: { isActive: true } })
+  const [
+    settings,
+    warehouses,
+    users,
+    expenses,
+    announcement
+  ] = await prisma.$transaction([
+    prisma.companySettings.findFirst(),
+    prisma.warehouse.findMany({ where: { type: { not: 'EXTERNAL' } } }),
+    prisma.user.findMany({ include: { warehouse: true } }),
+    prisma.expense.findMany({ orderBy: { date: 'desc' }, take: 10, include: { recordedBy: true } }),
+    prisma.announcement.findFirst({ where: { isActive: true } })
+  ])
   const sysSettings = await getSystemSettings()
 
   return (

@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import prisma from '@/lib/prisma'
-import { writeFile } from 'fs/promises'
+import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
+import { createClient } from '@supabase/supabase-js'
 
 export async function POST(req: Request) {
   try {
@@ -21,14 +22,40 @@ export async function POST(req: Request) {
 
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-
     const extension = file.name.split('.').pop() || 'png'
     const filename = `${type}-${Date.now()}.${extension}`
-    const filepath = path.join(process.cwd(), 'public', 'uploads', filename)
+    
+    let fileUrl = ''
 
-    await writeFile(filepath, buffer)
+    // Attempt Supabase Upload if environment variables are present
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-    const fileUrl = `/uploads/${filename}`
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createClient(supabaseUrl, supabaseKey)
+      const { data, error } = await supabase.storage
+        .from('company_assets')
+        .upload(filename, buffer, {
+          contentType: file.type,
+          upsert: true
+        })
+        
+      if (error) throw new Error(`Supabase upload failed: ${error.message}`)
+      
+      const { data: publicUrlData } = supabase.storage.from('company_assets').getPublicUrl(filename)
+      fileUrl = publicUrlData.publicUrl
+    } else {
+      // Fallback to local file system
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+      try {
+        await mkdir(uploadDir, { recursive: true })
+      } catch (e) {
+        // Ignore if exists
+      }
+      const filepath = path.join(uploadDir, filename)
+      await writeFile(filepath, buffer)
+      fileUrl = `/uploads/${filename}`
+    }
 
     let settings = await prisma.systemSettings.findUnique({
       where: { id: 'default' }
@@ -54,6 +81,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, url: fileUrl })
   } catch (error: any) {
     console.error('Upload Error:', error)
-    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to upload file: ' + error.message }, { status: 500 })
   }
 }

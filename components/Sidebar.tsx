@@ -75,26 +75,26 @@ export default function Sidebar({ role }: { role?: string }) {
 
       {(isProfile || isActivities) ? (
         <>
-           <SidebarLink href="/dashboard" label="Back to Dashboard" icon="⬅️" isOpen={isOpen} />
-           <SidebarLink href="/activities" label="Activity Logs" icon="📜" isOpen={isOpen} />
+           <SidebarLink href="/dashboard" label="Back to Dashboard" icon="⬅️" isOpen={isOpen} onClick={closeMobileSidebar} />
+           <SidebarLink href="/activities" label="Activity Logs" icon="📜" isOpen={isOpen} onClick={closeMobileSidebar} />
         </>
       ) : (
         <>
           {role !== 'SALESPERSON' && (
             <>
-              <SidebarLink href="#overview" label="Overview" icon="📊" isOpen={isOpen} />
-              <SidebarLink href="#inventory" label="Inventory" icon="📦" isOpen={isOpen} />
-              <SidebarLink href="#actions" label="Actions" icon="⚡" isOpen={isOpen} />
+              <SidebarLink href="#overview" label="Overview" icon="📊" isOpen={isOpen} onClick={closeMobileSidebar} />
+              <SidebarLink href="#inventory" label="Inventory" icon="📦" isOpen={isOpen} onClick={closeMobileSidebar} />
+              <SidebarLink href="#actions" label="Actions" icon="⚡" isOpen={isOpen} onClick={closeMobileSidebar} />
             </>
           )}
 
           {role === 'SALESPERSON' && (
             <>
-              <SidebarLink href="/salesperson" label="Sales Dashboard" icon="🛒" isOpen={isOpen} />
-              <SidebarLink href="/salesperson/history" label="My Sales Ledger" icon="🧾" isOpen={isOpen} />
+              <SidebarLink href="/salesperson" label="Sales Dashboard" icon="🛒" isOpen={isOpen} onClick={closeMobileSidebar} />
+              <SidebarLink href="/salesperson/history" label="My Sales Ledger" icon="🧾" isOpen={isOpen} onClick={closeMobileSidebar} />
             </>
           )}
-          <SidebarLink href="/activities" label="Activity Logs" icon="📜" isOpen={isOpen} />
+          <SidebarLink href="/activities" label="Activity Logs" icon="📜" isOpen={isOpen} onClick={closeMobileSidebar} />
           
           {role === 'DIRECTOR' && (
             <>
@@ -105,7 +105,7 @@ export default function Sidebar({ role }: { role?: string }) {
               ) : (
                 <div style={{ borderTop: '1px solid var(--border-color)', margin: '1rem 0 0.5rem' }}></div>
               )}
-              <SidebarLink href="/director/admin" label="Control Panel" icon="⚙️" isOpen={isOpen} />
+              <SidebarLink href="/director/admin" label="Control Panel" icon="⚙️" isOpen={isOpen} onClick={closeMobileSidebar} />
             </>
           )}
         </>
@@ -119,7 +119,7 @@ export default function Sidebar({ role }: { role?: string }) {
   )
 }
 
-function SidebarLink({ href, label, icon, isOpen }: { href: string, label: string, icon: string, isOpen: boolean }) {
+function SidebarLink({ href, label, icon, isOpen, onClick }: { href: string, label: string, icon: string, isOpen: boolean, onClick?: () => void }) {
   const pathname = usePathname()
   
   // Resolve base path (e.g., "/director/admin" -> "/director")
@@ -128,7 +128,7 @@ function SidebarLink({ href, label, icon, isOpen }: { href: string, label: strin
   const finalHref = isHash ? `${basePath}${href}` : href
 
   return (
-    <Link href={finalHref} style={{
+    <Link href={finalHref} onClick={onClick} style={{
       display: 'flex',
       alignItems: 'center',
       gap: '1rem',

@@ -50,7 +50,7 @@ export default function UserMenu({ user }: { user: any }) {
         }}>
           {user.name.charAt(0).toUpperCase()}
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.2 }}>
+        <div className="hidden-mobile" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.2 }}>
           <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{user.name}</span>
           <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{user.role.replace('_', ' ')}</span>
         </div>
@@ -60,7 +60,7 @@ export default function UserMenu({ user }: { user: any }) {
       </button>
 
       {isOpen && (
-        <div className="animate-fade-in" style={{
+        <div className="mobile-dropdown-fixed animate-fade-in" style={{
           position: 'absolute',
           top: '100%',
           right: 0,
@@ -71,6 +71,7 @@ export default function UserMenu({ user }: { user: any }) {
           borderRadius: '0.75rem',
           boxShadow: 'var(--glass-shadow)',
           minWidth: '200px',
+          maxWidth: 'calc(100vw - 2rem)',
           overflow: 'hidden',
           zIndex: 50
         }}>

@@ -16,7 +16,7 @@ export default async function Navbar() {
   const companyName = compSettings?.name || 'FWMS'
 
   return (
-    <nav style={{
+    <nav className="navbar-mobile" style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -25,7 +25,7 @@ export default async function Navbar() {
       borderBottom: '1px solid var(--border-color)',
       position: 'sticky',
       top: 0,
-      zIndex: 10
+      zIndex: 60
     }}>
       <div style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: '1.25rem', color: 'var(--text-light)' }}>
         <MobileMenuToggle />

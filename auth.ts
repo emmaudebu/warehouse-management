@@ -23,8 +23,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!user || user.role !== credentials.role) return null
 
-        const isPasswordValid = user.password === credentials.password || 
-                                await bcrypt.compare(credentials.password as string, user.password).catch(() => false)
+        const isPasswordValid = await bcrypt.compare(credentials.password as string, user.password).catch(() => false)
 
         if (isPasswordValid) {
           return {

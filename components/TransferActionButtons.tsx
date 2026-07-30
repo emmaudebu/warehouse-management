@@ -1,24 +1,29 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { receiveTransfer, rejectTransfer, cancelSubmittedTransfer } from '@/app/actions/transfers'
 
 interface Props {
   transferId: string;
   mode: 'RECEIVER' | 'SENDER';
+  onSuccess?: () => void;
   // RECEIVER = Can Accept or Decline
   // SENDER = Can Cancel
 }
 
-export default function TransferActionButtons({ transferId, mode }: Props) {
+export default function TransferActionButtons({ transferId, mode, onSuccess }: Props) {
   const [loading, setLoading] = useState(false)
   const [showDeclineModal, setShowDeclineModal] = useState(false)
   const [declineReason, setDeclineReason] = useState('')
+  const router = useRouter()
 
   const handleAccept = async () => {
     setLoading(true)
     try {
       await receiveTransfer(transferId)
+      router.refresh()
+      if (onSuccess) onSuccess()
     } catch (err: any) {
       alert(err.message || 'Failed to accept supply')
       setLoading(false)
@@ -37,6 +42,10 @@ export default function TransferActionButtons({ transferId, mode }: Props) {
       if (res.error) {
         alert(res.error)
         setLoading(false)
+      } else {
+        setShowDeclineModal(false)
+        router.refresh()
+        if (onSuccess) onSuccess()
       }
     } catch (err: any) {
       alert(err.message || 'Failed to decline supply')
@@ -53,6 +62,9 @@ export default function TransferActionButtons({ transferId, mode }: Props) {
       if (res.error) {
         alert(res.error)
         setLoading(false)
+      } else {
+        router.refresh()
+        if (onSuccess) onSuccess()
       }
     } catch (err: any) {
       alert(err.message || 'Failed to cancel supply')

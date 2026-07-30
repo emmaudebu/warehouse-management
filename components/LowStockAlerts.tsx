@@ -8,22 +8,22 @@ export default async function LowStockAlerts({ warehouseId }: { warehouseId?: st
   
   if (warehouseId) {
     lowStocksRaw = await prisma.$queryRaw`
-      SELECT s.id, s.quantity, p.name as productName, w.name as warehouseName 
-      FROM Stock s 
-      JOIN Product p ON s.productId = p.id
-      JOIN Warehouse w ON s.warehouseId = w.id
-      WHERE s.warehouseId = ${warehouseId}
-        AND s.quantity <= COALESCE(p.lowStockThreshold, ${threshold})
+      SELECT s.id, s.quantity, p.name as "productName", w.name as "warehouseName" 
+      FROM "Stock" s 
+      JOIN "Product" p ON s."productId" = p.id
+      JOIN "Warehouse" w ON s."warehouseId" = w.id
+      WHERE s."warehouseId" = ${warehouseId}
+        AND s.quantity <= COALESCE(p."lowStockThreshold", ${threshold})
       ORDER BY s.quantity ASC
       LIMIT 10
     `
   } else {
     lowStocksRaw = await prisma.$queryRaw`
-      SELECT s.id, s.quantity, p.name as productName, w.name as warehouseName 
-      FROM Stock s 
-      JOIN Product p ON s.productId = p.id
-      JOIN Warehouse w ON s.warehouseId = w.id
-      WHERE s.quantity <= COALESCE(p.lowStockThreshold, ${threshold})
+      SELECT s.id, s.quantity, p.name as "productName", w.name as "warehouseName" 
+      FROM "Stock" s 
+      JOIN "Product" p ON s."productId" = p.id
+      JOIN "Warehouse" w ON s."warehouseId" = w.id
+      WHERE s.quantity <= COALESCE(p."lowStockThreshold", ${threshold})
       ORDER BY s.quantity ASC
       LIMIT 10
     `

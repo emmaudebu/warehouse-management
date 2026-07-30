@@ -15,6 +15,8 @@ export default function TransferHistory({ warehouseId, userId, limit = 6, hideAc
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
 
+  const [refreshKey, setRefreshKey] = useState(0)
+
   useEffect(() => {
     async function loadData() {
       setLoading(true)
@@ -28,7 +30,7 @@ export default function TransferHistory({ warehouseId, userId, limit = 6, hideAc
       setLoading(false)
     }
     loadData()
-  }, [warehouseId, userId, page, limit, sortBy, startDate, endDate])
+  }, [warehouseId, userId, page, limit, sortBy, startDate, endDate, refreshKey])
 
   const exportData = transfers.map(t => ({
     'Date': new Date(t.createdAt).toLocaleString(),
@@ -154,6 +156,7 @@ export default function TransferHistory({ warehouseId, userId, limit = 6, hideAc
                       <TransferActionButtons 
                         transferId={t.id} 
                         mode={isOutgoing ? 'SENDER' : 'RECEIVER'} 
+                        onSuccess={() => setRefreshKey(prev => prev + 1)}
                       />
                     )}
                     <a href={t.status === 'DRAFT' ? `/supply/${t.id}` : `/invoice/${t.id}`} style={{

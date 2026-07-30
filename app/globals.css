@@ -284,16 +284,32 @@ main > div > section, main > div > header {
   .mobile-only-toggle {
     display: flex;
   }
-  .desktop-sidebar {
+  .hidden-mobile {
+    display: none !important;
+  }
+  .mobile-dropdown-fixed {
     position: fixed !important;
-    top: 0;
-    left: -300px;
-    height: 100vh;
-    z-index: 50;
-    transition: left 0.3s ease-in-out;
+    top: 75px !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+  .navbar-mobile {
+    padding: 0.75rem 1rem !important;
+  }
+  .desktop-sidebar {
+    display: none !important;
   }
   .desktop-sidebar.mobile-open {
-    left: 0;
+    display: flex !important;
+    position: fixed !important;
+    top: 58px;
+    left: 0 !important;
+    height: calc(100vh - 58px);
+    z-index: 50;
+    width: 260px !important;
+    transition: none;
   }
   table {
     display: block;

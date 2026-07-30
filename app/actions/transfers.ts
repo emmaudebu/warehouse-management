@@ -121,12 +121,12 @@ export async function initiateTransfer(formData: FormData) {
         })
       }
       return transfer.id
-    })
+    }, { maxWait: 10000, timeout: 20000 })
 
     newTransferId = transactionResult
 
     if (newTransferId) {
-      await logActivity(session.user.id, `Initiated new transfer draft`, `Draft ID: ${newTransferId}`, session.user.warehouseId)
+      await logActivity(session.user.id, `Initiated new transfer draft`, `Draft ID: ${newTransferId}`, session.user.warehouseId || undefined)
     }
 
     revalidatePath('/factory')
@@ -210,9 +210,9 @@ export async function receiveTransfer(transferId: string) {
           }
         })
       }
-    })
+    }, { maxWait: 10000, timeout: 20000 })
 
-    await logActivity(session.user.id, `Received transfer #${transferId}`, `Items added to inventory`, session.user.warehouseId)
+    await logActivity(session.user.id, `Received transfer #${transferId}`, `Items added to inventory`, session.user.warehouseId || undefined)
     if (transfer?.sourceId) {
       await logActivity(session.user.id, `Transfer #${transferId} received by destination`, `Items delivered`, transfer.sourceId)
     }
@@ -324,7 +324,7 @@ export async function submitTransfer(transferId: string) {
             })
           }
         }
-      })
+      }, { maxWait: 10000, timeout: 20000 })
     } else {
       await prisma.transfer.update({
         where: { id: transferId },
@@ -332,7 +332,7 @@ export async function submitTransfer(transferId: string) {
       })
     }
 
-    await logActivity(session.user.id, `Submitted transfer #${transferId}`, `Transfer status: ${newStatus}`, session.user.warehouseId)
+    await logActivity(session.user.id, `Submitted transfer #${transferId}`, `Transfer status: ${newStatus}`, session.user.warehouseId || undefined)
     if (transfer?.destinationId) {
       await logActivity(session.user.id, `Incoming transfer #${transferId} submitted`, `Expected delivery`, transfer.destinationId)
     }
@@ -384,7 +384,7 @@ export async function cancelTransferDraft(transferId: string) {
 
       // Delete the transfer
       await tx.transfer.delete({ where: { id: transferId } })
-    })
+    }, { maxWait: 10000, timeout: 20000 })
 
     revalidatePath('/factory')
     revalidatePath('/director')
@@ -392,7 +392,7 @@ export async function cancelTransferDraft(transferId: string) {
     revalidatePath('/storekeeper')
     revalidatePath('/supplier')
     
-    await logActivity(session.user.id, `Canceled transfer draft`, `Draft ID: ${transferId}`, session.user.warehouseId)
+    await logActivity(session.user.id, `Canceled transfer draft`, `Draft ID: ${transferId}`, session.user.warehouseId || undefined)
     
     return { success: true }
   } catch (error: any) {
@@ -478,7 +478,7 @@ export async function updateTransferDraft(formData: FormData) {
         where: { id: transferId },
         data: { vehicleNum, driverName }
       })
-    })
+    }, { maxWait: 10000, timeout: 20000 })
 
     revalidatePath('/factory')
     revalidatePath('/director')
@@ -525,9 +525,9 @@ export async function rejectTransfer(transferId: string, reason: string) {
           remarks: reason ? `Rejected: ${reason}` : 'Rejected without reason'
         }
       })
-    })
+    }, { maxWait: 10000, timeout: 20000 })
 
-    await logActivity(session.user.id, `Rejected transfer #${transferId}`, `Reason: ${reason || 'None provided'}`, session.user.warehouseId)
+    await logActivity(session.user.id, `Rejected transfer #${transferId}`, `Reason: ${reason || 'None provided'}`, session.user.warehouseId || undefined)
 
     revalidatePath('/factory')
     revalidatePath('/director')
@@ -580,9 +580,9 @@ export async function cancelSubmittedTransfer(transferId: string) {
         where: { id: transferId },
         data: { status: 'CANCELLED', remarks: 'Cancelled by sender' } 
       })
-    })
+    }, { maxWait: 10000, timeout: 20000 })
 
-    await logActivity(session.user.id, `Cancelled pending transfer #${transferId}`, `Stock restored`, session.user.warehouseId)
+    await logActivity(session.user.id, `Cancelled pending transfer #${transferId}`, `Stock restored`, session.user.warehouseId || undefined)
 
     revalidatePath('/factory')
     revalidatePath('/director')

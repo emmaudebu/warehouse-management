@@ -75,18 +75,18 @@ export default function NotificationBell({ initialCount = 0 }: { initialCount?: 
       </button>
 
       {isOpen && (
-        <div style={{
+        <div className="mobile-dropdown-fixed animate-fade-in" style={{
           position: 'absolute',
           top: 'calc(100% + 0.5rem)',
-          right: '-10px',
+          right: 0,
           width: '320px',
+          maxWidth: 'calc(100vw - 2rem)',
           backgroundColor: 'var(--bg-card)',
           borderRadius: '1rem',
           boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)',
           border: '1px solid var(--border-color)',
           zIndex: 100,
           padding: '1rem',
-          animation: 'slideUp 0.2s ease-out'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-light)' }}>Notifications</h3>

@@ -18,7 +18,9 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  if (session.user.status === 'SUSPENDED') {
+  const dbUser = await prisma.user.findUnique({ where: { id: session.user.id }, select: { status: true } })
+
+  if (!dbUser || dbUser.status === 'SUSPENDED') {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-color)', color: 'var(--text-light)', padding: '2rem', textAlign: 'center' }}>
         <div style={{ backgroundColor: 'var(--bg-dark)', padding: '3rem', borderRadius: '1rem', border: '1px solid var(--border-color)', maxWidth: '500px' }}>
@@ -61,9 +63,6 @@ export default async function DashboardLayout({
           }}>
             <span style={{ fontSize: '1.25rem' }}>📢</span>
             <p style={{ margin: 0, fontWeight: 500, fontSize: '0.95rem' }}>{announcement.message}</p>
-            {announcement.author && (
-              <small style={{ color: 'var(--text-muted)', marginLeft: '0.5rem' }}>- {announcement.author.name}</small>
-            )}
           </div>
         </div>
       )}

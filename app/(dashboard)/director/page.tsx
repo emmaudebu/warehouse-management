@@ -12,19 +12,37 @@ import { auth } from '@/auth'
 export default async function DirectorDashboard() {
   const session = await auth()
   const role = session?.user?.role
-  const products = await prisma.product.findMany({ include: { category: true } })
-  const totalProducts = products.length
-  const categories = await prisma.category.findMany()
+  const [
+    products,
+    categories,
+    stocks,
+    recentTransfers,
+    pendingTransfers,
+    externalSales,
+    supplierTransfers,
+    expenses
+  ] = await prisma.$transaction([
+    prisma.product.findMany({ include: { category: true } }),
+    prisma.category.findMany(),
+    prisma.stock.findMany({ include: { warehouse: true, product: true } }),
+    prisma.transfer.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: { source: true, destination: true, customer: true, items: { include: { product: true } } }
+    }),
+    prisma.transfer.count({ where: { status: 'PENDING' } }),
+    prisma.transfer.findMany({
+      where: { status: 'DELIVERED', destination: { type: 'EXTERNAL' } },
+      include: { items: { include: { product: true } }, initiatedBy: true }
+    }),
+    prisma.transfer.findMany({
+      where: { status: 'DELIVERED', source: { type: 'SUPPLIER' } },
+      include: { items: { include: { product: true } }, initiatedBy: true }
+    }),
+    prisma.expense.findMany()
+  ])
   
-  const stocks = await prisma.stock.findMany({
-    include: { warehouse: true, product: true }
-  })
-
-  const recentTransfers = await prisma.transfer.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: 10,
-    include: { source: true, destination: true, customer: true, items: { include: { product: true } } }
-  })
+  const totalProducts = products.length
 
   let factoryStock = 0
   let marketStock = 0
@@ -37,16 +55,6 @@ export default async function DirectorDashboard() {
   })
 
   const globalStock = factoryStock + marketStock + supplierStock
-
-  const pendingTransfers = await prisma.transfer.count({
-    where: { status: 'PENDING' }
-  })
-
-  // Basic Revenue & Profit Calculation
-  const externalSales = await prisma.transfer.findMany({
-    where: { status: 'DELIVERED', destination: { type: 'EXTERNAL' } },
-    include: { items: { include: { product: true } }, initiatedBy: true }
-  })
   
   let totalRevenue = 0
   let totalCogs = 0
@@ -73,11 +81,6 @@ export default async function DirectorDashboard() {
   const performanceList = Object.values(salesPerformance).sort((a, b) => b.totalSales - a.totalSales)
 
   // Supplier Performance Calculation
-  const supplierTransfers = await prisma.transfer.findMany({
-    where: { status: 'DELIVERED', source: { type: 'SUPPLIER' } },
-    include: { items: { include: { product: true } }, initiatedBy: true }
-  })
-
   const supplierPerformance: Record<string, { name: string, totalValue: number }> = {}
 
   supplierTransfers.forEach(transfer => {
@@ -96,7 +99,6 @@ export default async function DirectorDashboard() {
 
   const supplierPerformanceList = Object.values(supplierPerformance).sort((a, b) => b.totalValue - a.totalValue)
 
-  const expenses = await prisma.expense.findMany()
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0)
 
   const netProfit = totalRevenue - totalCogs - totalExpenses
