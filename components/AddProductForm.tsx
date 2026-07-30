@@ -1,13 +1,16 @@
 'use client'
 
 import { addProduct } from '@/app/actions/products'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
 export default function AddProductForm({ categories }: { categories: { id: string, name: string }[] }) {
   const formRef = useRef<HTMLFormElement>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (formData: FormData) => {
+    setIsLoading(true)
     const result = await addProduct(formData)
+    setIsLoading(false)
     
     if (result?.error) {
       alert(result.error) // Pop up alert if product already exists
@@ -70,8 +73,20 @@ export default function AddProductForm({ categories }: { categories: { id: strin
       </div>
       
       <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem' }}>
-        <button className="btn btn-primary" type="submit" style={{ width: '100%', padding: '1rem', fontSize: '1rem' }}>
-          Add Product to Catalog ✨
+        <button 
+          className="btn btn-primary" 
+          type="submit" 
+          disabled={isLoading}
+          style={{ 
+            width: '100%', 
+            padding: '1rem', 
+            fontSize: '1rem',
+            opacity: isLoading ? 0.7 : 1,
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          {isLoading ? 'Saving Product...' : 'Add Product to Catalog ✨'}
         </button>
       </div>
     </form>

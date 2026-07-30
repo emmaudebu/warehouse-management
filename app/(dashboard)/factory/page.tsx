@@ -1,4 +1,5 @@
 import Card from '@/components/Card'
+import SubmitButton from '@/components/SubmitButton'
 import prisma from '@/lib/prisma'
 import { recordProduction } from '@/app/actions/factory'
 
@@ -89,7 +90,7 @@ export default async function FactoryDashboard() {
       </section>
 
       {/* Action Forms Section */}
-      <section id="actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '1.5rem' }}>
+      <section id="actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 45%), 1fr))', gap: '1.5rem' }}>
         
         {/* Add Product Form */}
         <Card style={{ borderTop: '4px solid var(--primary-color)' }}>
@@ -116,7 +117,7 @@ export default async function FactoryDashboard() {
             ]} />
             
             <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem' }}>
-              <button className="btn btn-primary" type="submit" style={{ width: '100%', padding: '1rem', fontSize: '1rem' }}>Save Production 🚀</button>
+              <SubmitButton text="Save Production 🚀" />
             </div>
           </form>
         </Card>
