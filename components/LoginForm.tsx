@@ -83,7 +83,7 @@ export default function LoginForm({ loginBgUrl, companyName = 'My Company', logo
             <img src={logoUrl} alt={`${companyName} Logo`} style={{ width: '80px', height: '80px', objectFit: 'contain', marginBottom: '1rem', borderRadius: '50%' }} />
           )}
           <h3 style={{ fontSize: '1.4rem', marginBottom: '0.5rem', fontWeight: 800, color: 'var(--text-light)', textAlign: 'center', lineHeight: 1.3 }}>
-            Welcome Back to <br/><span className="text-gradient">{companyName}</span><br/>Premium Management System
+            <span className="text-gradient">{companyName}</span>
           </h3>
           <h3 style={{ color: 'var(--text-muted)', marginBottom: '1rem', fontSize: '0.9rem', textAlign: 'center', fontWeight: 500 }}>
             Please sign in to your account.
@@ -251,12 +251,7 @@ export default function LoginForm({ loginBgUrl, companyName = 'My Company', logo
             </button>
           </form>
           
-          <div style={{ marginTop: '3rem', fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center', lineHeight: '1.6', padding: '1rem', backgroundColor: 'var(--bg-dark)', borderRadius: '0.5rem', border: '1px dashed var(--border-color)' }}>
-            <strong>Demo Accounts:</strong><br />
-            director | factory<br/>
-            keeper | supplier<br/>
-            <em>Password for all: password123</em>
-          </div>
+
         </div>
     </div>
   )
