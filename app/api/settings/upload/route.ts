@@ -22,40 +22,12 @@ export async function POST(req: Request) {
 
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    const extension = file.name.split('.').pop() || 'png'
-    const filename = `${type}-${Date.now()}.${extension}`
+    const mimeType = file.type || 'image/png'
     
-    let fileUrl = ''
-
-    // Attempt Supabase Upload if environment variables are present
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    if (supabaseUrl && supabaseKey) {
-      const supabase = createClient(supabaseUrl, supabaseKey)
-      const { data, error } = await supabase.storage
-        .from('company_assets')
-        .upload(filename, buffer, {
-          contentType: file.type,
-          upsert: true
-        })
-        
-      if (error) throw new Error(`Supabase upload failed: ${error.message}`)
-      
-      const { data: publicUrlData } = supabase.storage.from('company_assets').getPublicUrl(filename)
-      fileUrl = publicUrlData.publicUrl
-    } else {
-      // Fallback to local file system
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-      try {
-        await mkdir(uploadDir, { recursive: true })
-      } catch (e) {
-        // Ignore if exists
-      }
-      const filepath = path.join(uploadDir, filename)
-      await writeFile(filepath, buffer)
-      fileUrl = `/uploads/${filename}`
-    }
+    // Convert directly to Base64 string to store in the database
+    // This avoids EROFS (Read-Only File System) errors in Serverless environments like Netlify
+    const base64Data = buffer.toString('base64')
+    const fileUrl = `data:${mimeType};base64,${base64Data}`
 
     let settings = await prisma.systemSettings.findUnique({
       where: { id: 'default' }
