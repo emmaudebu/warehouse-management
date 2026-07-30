@@ -8,11 +8,11 @@ export async function seedDatabase() {
 
   // 1. Create Users
   const director = await prisma.user.create({
-    data: { name: 'Admin Director', username: 'director', email: 'director@fwms.com', password: 'password123', role: 'DIRECTOR' }
+    data: { name: 'Admin Director', username: 'director', email: 'director@fwms.com', password: '$2b$10$Eqir5QW478zo/5hU/toIPOF4mAD21qGJD5Ga6Z3mvYz1OI5TVKTpm', role: 'DIRECTOR' }
   })
   
   const factoryManager = await prisma.user.create({
-    data: { name: 'Factory Boss', username: 'factory', email: 'factory@fwms.com', password: 'password123', role: 'FACTORY_MANAGER' }
+    data: { name: 'Factory Boss', username: 'factory', email: 'factory@fwms.com', password: '$2b$10$Eqir5QW478zo/5hU/toIPOF4mAD21qGJD5Ga6Z3mvYz1OI5TVKTpm', role: 'FACTORY_MANAGER' }
   })
 
   // 2. Create Warehouses
@@ -32,11 +32,11 @@ export async function seedDatabase() {
   await prisma.user.update({ where: { id: factoryManager.id }, data: { warehouseId: factoryWarehouse.id } })
   
   const storeKeeper = await prisma.user.create({
-    data: { name: 'Market Keeper', username: 'keeper', email: 'keeper@fwms.com', password: 'password123', role: 'STORE_KEEPER', warehouseId: marketWarehouse.id }
+    data: { name: 'Market Keeper', username: 'keeper', email: 'keeper@fwms.com', password: '$2b$10$Eqir5QW478zo/5hU/toIPOF4mAD21qGJD5Ga6Z3mvYz1OI5TVKTpm', role: 'STORE_KEEPER', warehouseId: marketWarehouse.id }
   })
   
   const supplierUser = await prisma.user.create({
-    data: { name: 'Supplier Contact', username: 'supplier', email: 'supplier@fwms.com', password: 'password123', role: 'SUPPLIER', warehouseId: supplierStore.id }
+    data: { name: 'Supplier Contact', username: 'supplier', email: 'supplier@fwms.com', password: '$2b$10$Eqir5QW478zo/5hU/toIPOF4mAD21qGJD5Ga6Z3mvYz1OI5TVKTpm', role: 'SUPPLIER', warehouseId: supplierStore.id }
   })
 
   // 3. Create Categories
