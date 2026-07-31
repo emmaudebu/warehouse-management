@@ -29,3 +29,6 @@ reset-stella.ts
 
 # Local Netlify folder
 .netlify
+
+# WordPress Plugin
+wordpress-plugin/

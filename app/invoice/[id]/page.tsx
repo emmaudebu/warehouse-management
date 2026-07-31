@@ -77,7 +77,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
       }}>
         
         {/* Header */}
-        <div style={{ borderBottom: '2px solid #e5e7eb', paddingBottom: '2rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div className="receipt-header" style={{ borderBottom: '2px solid #e5e7eb', paddingBottom: '2rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             {companySettings?.logoUrl && (
               <img src={companySettings.logoUrl} alt="Company Logo" style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '0.5rem' }} />
@@ -97,7 +97,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
         </div>
 
         {/* Logistics Info */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', backgroundColor: '#f9fafb', padding: '1.5rem', borderRadius: '0.5rem' }}>
+        <div className="receipt-logistics" style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2rem', backgroundColor: '#f9fafb', padding: '1.5rem', borderRadius: '0.5rem' }}>
           <div>
             <h4 style={{ margin: '0 0 0.5rem 0', color: '#9ca3af', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>Dispatching From</h4>
             <p style={{ margin: 0, fontWeight: 600, fontSize: '1.1rem' }}>{transfer.source.name}</p>
@@ -118,8 +118,9 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
         </div>
 
         {/* Items Table */}
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '3rem' }}>
-          <thead>
+        <div style={{ overflowX: 'auto', marginBottom: '3rem' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+            <thead>
             <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
               <th style={{ textAlign: 'left', padding: '1rem 0', color: '#374151' }}>Product</th>
               <th style={{ textAlign: 'left', padding: '1rem 0', color: '#374151' }}>Batch No.</th>
@@ -164,6 +165,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
             </tr>
           </tfoot>
         </table>
+        </div>
 
         {/* Signatures */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '4rem', marginTop: '4rem' }}>
@@ -188,6 +190,12 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
           body { background-color: white !important; }
           .no-print { display: none !important; }
           .receipt-paper { box-shadow: none !important; padding: 0 !important; max-width: 100% !important; }
+        }
+        @media (max-width: 640px) {
+          .receipt-paper { padding: 1.5rem !important; }
+          .receipt-header { flex-direction: column; text-align: left; }
+          .receipt-header > div:last-child { text-align: left !important; }
+          .receipt-logistics { flex-direction: column; }
         }
       `}} />
     </div>
